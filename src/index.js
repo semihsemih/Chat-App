@@ -3,7 +3,7 @@ const http = require('http')
 const express = require('express')
 const socketio = require('socket.io')
 const Filter = require('bad-words')
-const { generateMessage, generateLocationMessage } = require('./utils/messages') 
+const { generateMessage, generateLocationMessage } = require('./utils/messages')
 
 const app = express()
 const server = http.createServer(app)
@@ -19,8 +19,13 @@ let count = 0
 io.on('connection', (socket) => {
   console.log('New WebSocket connection')
 
-  socket.emit('message', generateMessage('Welcome!'))
-  socket.broadcast.emit('message', generateMessage('A new user has joined!'))
+
+  socket.on('join', ({ username, room }) => {
+    socket.join(room)
+
+    socket.emit('message', generateMessage('Welcome!'))
+    socket.broadcast.to(room).emit('message', generateMessage(`${username} has joined!`))
+  })
 
   socket.on('sendMessage', (message, callback) => {
     const filter = new Filter()
@@ -28,8 +33,8 @@ io.on('connection', (socket) => {
     if (filter.isProfane(message)) {
       return callback('Profanity is not allowed!')
     }
-    
-    io.emit('message', generateMessage(message))
+
+    io.to('room1').emit('message', generateMessage(message))
     callback()
   })
 
