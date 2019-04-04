@@ -22,4 +22,4 @@ Then visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Demo
 
-https://forecast-weather-application.herokuapp.com/
+https://chatapp-socketio-node.herokuapp.com/
